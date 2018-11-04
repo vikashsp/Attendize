@@ -20,9 +20,9 @@
 @stop
 
 @section('head')
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css" />
-    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css" integrity="sha256-szHusaozbQctTn4FX+3l5E0A5zoxz7+ne4fr8NgWJlw=" crossorigin="anonymous" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js" integrity="sha256-Gk+dzc4kV2rqAZMkyy3gcfW6Xd66BhGYjVWa/FjPu+s=" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js" integrity="sha256-0rg2VtfJo3VUij/UY9X0HJP7NET6tgAY98aMOfwP0P8=" crossorigin="anonymous"></script>
     <script>
         $(function () {
             $.getJSON('http://graph.facebook.com/?id=' + '{{route('showEventPage',['event_id' => $event->id, 'event_slug' => Str::slug($event->title)])}}', function (fbdata) {
@@ -377,9 +377,10 @@
             }
         });
         function formatDate(x) {
-            var m_names = <?=json_encode(explode("|", trans("basic.months_short")))?>;
-            var sup = "",
-                    curr_date = x.getDate();
+            var m_names = <?=json_encode(array_filter(explode("|", trans("basic.months_short")))); ?>;
+            var sup = "";
+            var curr_date = x.getDate();
+
             <?php if(Lang::locale()=="en") { ?>
             if (curr_date == 1 || curr_date == 21 || curr_date == 31) {
                 sup = "st";
@@ -394,18 +395,14 @@
                 sup = "th";
             }
             <?php } ?>
-            /*  {{Lang::locale()}} */
 
-            return curr_date + sup + ' ' + m_names[x.getMonth()];
+            return curr_date + sup + ' ' + m_names[x.getMonth() + 1];
         }
 
         var target_date = new Date("{{$event->start_date->format('M d, Y H:i')}} ").getTime();
         var now = new Date();
         var countdown = document.getElementById("countdown");
-        if (target_date < now) {
-            countdown.innerHTML = "@lang("Dashboard.this_event_has_started")";
-        } else {
-
+        if (target_date > now) {
             var days, hours, minutes, seconds;
             setCountdown();
             setInterval(function () {

@@ -17,6 +17,7 @@ class Ticket extends MyBaseModel
      *
      * @return array $rules
      */
+
     public function rules()
     {
         $format = config('attendize.default_datetime_format');
